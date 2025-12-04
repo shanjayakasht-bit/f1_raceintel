@@ -9,7 +9,7 @@ def engineer_features(laptimes: pd.DataFrame, pit: pd.DataFrame) -> pd.DataFrame
     - pit_avg: average pit-stop duration
     """
 
-    # Average lap time per (race, driver)
+   
     avg_lap = (
         laptimes
         .groupby(["raceId", "driverId"])["milliseconds"]
@@ -17,7 +17,7 @@ def engineer_features(laptimes: pd.DataFrame, pit: pd.DataFrame) -> pd.DataFrame
         .reset_index(name="avg_lap_ms")
     )
 
-    # Lap-time consistency (standard deviation)
+   
     consistency = (
         laptimes
         .groupby(["raceId", "driverId"])["milliseconds"]
@@ -25,7 +25,7 @@ def engineer_features(laptimes: pd.DataFrame, pit: pd.DataFrame) -> pd.DataFrame
         .reset_index(name="lap_std")
     )
 
-    # Pit-stop features
+    
     pit_info = (
         pit
         .groupby(["raceId", "driverId"])
@@ -36,15 +36,16 @@ def engineer_features(laptimes: pd.DataFrame, pit: pd.DataFrame) -> pd.DataFrame
         .reset_index()
     )
 
-    # Merge all features
+   
     df = avg_lap.merge(consistency, on=["raceId", "driverId"], how="left")
     df = df.merge(pit_info, on=["raceId", "driverId"], how="left")
 
-    # Replace missing pit info with 0 (no pit stops)
+    
     df["pit_count"] = df["pit_count"].fillna(0)
     df["pit_avg"] = df["pit_avg"].fillna(0)
 
-    # If any lap_std is NaN (only 1 lap), set to 0
+   
     df["lap_std"] = df["lap_std"].fillna(0)
 
     return df
+
